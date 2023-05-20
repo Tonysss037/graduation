@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.graduation.graduation.mapper.BmsTeamMapper">
+    <resultMap id="teamVO" type="com.graduation.graduation.model.vo.TeamVO">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="user_id" property="userId"/>
+        <result column="view" property="view"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="username" property="username"/>
+        <result column="alias" property="alias"/>
+    </resultMap>
+
+    <select id="selectListAndPage" resultMap="teamVO">
+        SELECT
+        t.id,t.title,t.user_id,
+        t.view,t.create_time ,t.modify_time ,
+        u.username,u.alias
+        FROM bms_team t
+        LEFT JOIN ums_user u
+        ON t.user_id = u.id
+    </select>
+
+    <select id="searchByKey" resultMap="teamVO">
+        SELECT *
+        FROM bms_team t
+        LEFT JOIN ums_user u
+        ON t.user_id = u.id
+        <where>
+            <if test="keyword!=null">
+                and (
+                t.tags like CONCAT('%','${keyword}')
+                or t.tags like CONCAT('${keyword}','%')
+                or t.tags like CONCAT('%','${keyword}','%')
+                or t.tags = #{keyword}
+                )
+                and t.isteam = '0'
+            </if>
+        </where>
+        order by t.view desc, t.create_time desc
+    </select>
+
+    <select id="searchByKey2" resultMap="teamVO">
+        SELECT *
+        FROM bms_team t
+        LEFT JOIN ums_user u
+        ON t.user_id = u.id
+        <where>
+            <if test="keyword!=null">
+                and t.tags not like '足球'
+                and t.tags not like '篮球'
+                and t.tags not like '排球'
+                and t.tags not like '羽毛球'
+                and t.tags not like '乒乓球'
+                and t.tags not like '网球'
+            </if>
+        </where>
+        order by t.view desc, t.create_time desc
+    </select>
+
+</mapper>
